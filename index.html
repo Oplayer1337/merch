@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI для мерча</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #111;
+    --paper: #f4f0e8;
+    --paper2: #ece8de;
+    --red: #e63000;
+    --red-soft: rgba(230,48,0,0.08);
+    --yellow: #f5c400;
+    --border: rgba(0,0,0,0.12);
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: var(--paper);
+    border-bottom: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px;
+    height: 56px;
+  }
+  .nav-logo {
+    font-family: 'Anton', sans-serif;
+    font-size: 18px;
+    letter-spacing: 1px;
+  }
+  .nav-logo span { color: var(--red); }
+  .nav-links { display: flex; gap: 32px; font-size: 13px; font-weight: 500; color: #666; }
+  .nav-links a { text-decoration: none; color: inherit; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--ink); }
+
+  /* HERO */
+  .hero {
+    margin-top: 56px;
+    padding: 80px 48px 72px;
+    border-bottom: 1.5px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 60px;
+    align-items: end;
+  }
+
+  .hero-eyebrow {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--red); margin-bottom: 24px;
+    opacity: 0; animation: up 0.5s 0.1s forwards;
+  }
+  .hero-eyebrow::before {
+    content: ''; display: block;
+    width: 28px; height: 1.5px; background: var(--red);
+  }
+
+  h1 {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(64px, 8vw, 108px);
+    line-height: 0.9;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    opacity: 0; animation: up 0.6s 0.25s forwards;
+  }
+  h1 em { color: var(--red); font-style: normal; }
+
+  .hero-desc {
+    font-size: 16px; line-height: 1.7; color: #555; max-width: 520px;
+    opacity: 0; animation: up 0.6s 0.4s forwards;
+  }
+
+  .hero-right {
+    opacity: 0; animation: up 0.6s 0.5s forwards;
+  }
+
+  .stat-block {
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .stat-row {
+    padding: 22px 24px;
+    border-bottom: 1.5px solid var(--border);
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-num {
+    font-family: 'Anton', sans-serif;
+    font-size: 44px;
+    color: var(--red);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 12px; color: #777;
+    text-align: right; max-width: 120px;
+    line-height: 1.4;
+  }
+
+  /* SECTION */
+  section { border-bottom: 1.5px solid var(--border); }
+  .section-inner { padding: 72px 48px; }
+
+  .section-header {
+    display: flex; align-items: baseline; gap: 20px;
+    margin-bottom: 48px;
+  }
+  .section-num {
+    font-family: 'Anton', sans-serif;
+    font-size: 13px; letter-spacing: 2px;
+    color: var(--red); opacity: 0.6;
+  }
+  h2 {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(32px, 4vw, 52px);
+    text-transform: uppercase; line-height: 1;
+  }
+
+  /* CASES */
+  .cases-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--border);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .case-card {
+    background: var(--paper);
+    padding: 32px 28px;
+    transition: background 0.25s;
+    cursor: default;
+  }
+  .case-card:hover { background: var(--paper2); }
+
+  .case-tag {
+    display: inline-block;
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    background: var(--red-soft);
+    color: var(--red);
+    padding: 4px 10px; border-radius: 100px;
+    margin-bottom: 18px;
+  }
+
+  .case-icon {
+    font-size: 40px; margin-bottom: 16px; display: block;
+    line-height: 1;
+  }
+
+  .case-title {
+    font-family: 'Anton', sans-serif;
+    font-size: 22px; text-transform: uppercase; line-height: 1.1;
+    margin-bottom: 10px;
+  }
+
+  .case-brief {
+    font-size: 12px; color: #888; letter-spacing: 1px;
+    text-transform: uppercase; margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .case-body {
+    font-size: 13.5px; color: #555; line-height: 1.65;
+    margin-bottom: 20px;
+  }
+
+  .case-result {
+    font-size: 13px; font-weight: 600;
+    color: #555;
+    background: var(--paper2);
+    border: 1px solid var(--border);
+    display: inline-block;
+    padding: 6px 12px; border-radius: 6px;
+  }
+
+  /* HOW IT WORKS */
+  .how-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .how-step {
+    padding: 32px 26px;
+    border-right: 1.5px solid var(--border);
+    position: relative;
+  }
+  .how-step:last-child { border-right: none; }
+
+  .how-num {
+    font-family: 'Anton', sans-serif;
+    font-size: 64px; color: var(--paper2);
+    line-height: 1; margin-bottom: 16px;
+    position: relative;
+  }
+  .how-num::after {
+    content: attr(data-n);
+    position: absolute; top: 0; left: 0;
+    font-size: 64px; color: var(--red);
+    clip-path: inset(0 70% 0 0);
+  }
+
+  .how-step h3 {
+    font-size: 14px; font-weight: 700;
+    margin-bottom: 8px; text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .how-step p { font-size: 13px; color: #777; line-height: 1.6; }
+
+  /* WHY */
+  .why-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+
+  .why-list { list-style: none; }
+  .why-item {
+    display: flex; gap: 16px; align-items: flex-start;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+    opacity: 0;
+    transform: translateY(16px);
+    transition: all 0.45s;
+  }
+  .why-item.vis { opacity: 1; transform: none; }
+
+  .why-item:first-child { border-top: 1px solid var(--border); }
+
+  .why-dot {
+    width: 8px; height: 8px;
+    background: var(--red);
+    border-radius: 50%;
+    margin-top: 6px; flex-shrink: 0;
+  }
+
+  .why-item h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .why-item p { font-size: 13px; color: #777; line-height: 1.55; }
+
+  .big-statement {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(36px, 4vw, 56px);
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+  .big-statement span { color: var(--red); }
+
+  /* DEMO */
+  .demo-section {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .demo-section .section-inner { padding: 72px 48px; }
+  .demo-section h2 { color: var(--paper); }
+  .demo-section .section-num { color: #e63000; }
+
+  .demo-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 0;
+  }
+
+  .demo-panel {
+    padding: 40px;
+    background: #1a1a1a;
+  }
+
+  .demo-panel h3 {
+    font-size: 11px; letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #e63000; margin-bottom: 24px;
+  }
+
+  .demo-panel p {
+    font-size: 14px; color: #aaa; line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  .demo-panel ul {
+    list-style: none; display: flex; flex-direction: column; gap: 10px;
+  }
+  .demo-panel ul li {
+    font-size: 13px; color: #bbb;
+    padding-left: 16px; position: relative; line-height: 1.5;
+  }
+  .demo-panel ul li::before {
+    content: '→'; position: absolute; left: 0;
+    color: var(--red);
+  }
+
+  .live-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(230,48,0,0.15);
+    border: 1px solid rgba(230,48,0,0.3);
+    color: #e63000;
+    padding: 8px 16px; border-radius: 100px;
+    font-size: 12px; font-weight: 600;
+    margin-bottom: 24px;
+  }
+  .live-dot {
+    width: 7px; height: 7px; background: var(--red);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 36px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 12px; color: #aaa;
+  }
+  footer strong { color: var(--ink); font-weight: 600; }
+
+  @keyframes up {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  @media (max-width: 960px) {
+    nav { padding: 0 24px; }
+    .hero { padding: 60px 24px; grid-template-columns: 1fr; }
+    .hero-right { display: none; }
+    .section-inner { padding: 56px 24px; }
+    .cases-grid { grid-template-columns: 1fr; }
+    .how-grid { grid-template-columns: 1fr 1fr; }
+    .why-grid { grid-template-columns: 1fr; }
+    .demo-box { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 8px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">AI<span>×</span>MERCH</div>
+  <div class="nav-links">
+    <a href="#cases">Кейсы</a>
+    <a href="#how">Процесс</a>
+    <a href="#why">Почему я</a>
+    <a href="#demo">Демо</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div>
+    <div class="hero-eyebrow">AI-production для мерча</div>
+    <h1>Арт<br>в <em>тираж</em><br>за часы</h1>
+    <p class="hero-desc">
+      Генерирую принт-ассеты с помощью нейросетей — от референса до готового файла.
+      Быстро, предсказуемо, с результатом который сразу идёт в производство.
+    </p>
+  </div>
+  <div class="hero-right">
+    <div class="stat-block">
+      <div class="stat-row">
+        <div class="stat-num">10×</div>
+        <div class="stat-label">больше вариантов за то же время</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-num">1 день</div>
+        <div class="stat-label">от задачи до принт-файла</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-num">0</div>
+        <div class="stat-label">«нужно переделать с нуля»</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CASES -->
+<section id="cases">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>Какие задачи решаю</h2>
+    </div>
+    <div class="cases-grid">
+
+      <div class="case-card">
+        <span class="case-icon">🐾</span>
+        <span class="case-tag">Персонаж по фото</span>
+        <div class="case-title">Любой объект — в арт</div>
+        <div class="case-brief">Референс: фото животного, человека, предмета</div>
+        <p class="case-body">
+          Заказчик присылает фотографию — собаки, логотипа, фирменного предмета —
+          и описание на пальцах: «чтобы держал в лапах рюкзак», «злобный, но смешной».
+          Я перевожу это в точные инструкции и выдаю десятки вариантов арта,
+          среди которых гарантированно найдётся то самое.
+        </p>
+        <span class="case-result">→ Из фото — в готовый принт-ассет</span>
+      </div>
+
+      <div class="case-card">
+        <span class="case-icon">🏆</span>
+        <span class="case-tag">Маскот / персонаж</span>
+        <div class="case-title">Персонаж для события или клуба</div>
+        <div class="case-brief">Референс: название, дух, пара слов о стиле</div>
+        <p class="case-body">
+          Нужен маскот для турнира, клуба или серии мерча — но непонятно, как он
+          должен выглядеть. Я генерирую варианты в разных стилях: мультяшный,
+          стрит-арт, ретро-иллюстрация, жёсткий графический. Заказчик
+          выбирает направление — я дорабатываю до финала.
+        </p>
+        <span class="case-result">→ Из идеи — в персонажа с характером</span>
+      </div>
+
+      <div class="case-card">
+        <span class="case-icon">🎨</span>
+        <span class="case-tag">Принт под событие</span>
+        <div class="case-title">Арт к конкретной дате или теме</div>
+        <div class="case-brief">Референс: название события, атмосфера, цвета</div>
+        <p class="case-body">
+          Марафон, турнир, фестиваль — нужен принт, который считывается сразу
+          и выглядит как дизайн, а не как типовая нашлёпка.
+          Работаю с текстом, символикой, графикой — и выдаю несколько
+          концепций, из которых реально выбрать, а не угадывать.
+        </p>
+        <span class="case-result">→ Из темы — в несколько концепций на выбор</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>Как это работает</h2>
+    </div>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="how-num" data-n="01">01</div>
+        <h3>Референс</h3>
+        <p>Принимаю любой формат — фото, ссылку, описание на пальцах, скриншот с Pinterest</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num" data-n="02">02</div>
+        <h3>Батч вариантов</h3>
+        <p>Генерирую 20–50 вариантов в разных стилях и настроениях за несколько часов</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num" data-n="03">03</div>
+        <h3>Выбор и доводка</h3>
+        <p>Вместе выбираем лучшее, дорабатываю под требования печати — разрешение, фон, контуры</p>
+      </div>
+      <div class="how-step">
+        <div class="how-num" data-n="04">04</div>
+        <h3>Готовый файл</h3>
+        <p>Отдаю в формате под производство: PNG, SVG, AI — как нужно типографии</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section id="why">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>Почему я</h2>
+    </div>
+    <div class="why-grid">
+      <ul class="why-list">
+        <li class="why-item">
+          <div class="why-dot"></div>
+          <div>
+            <h4>Скорость без потери качества</h4>
+            <p>Нейросети дают скорость — но только когда знаешь, как ими управлять. Я вкладываю в промпт то, что другие объясняли бы дизайнеру три итерации.</p>
+          </div>
+        </li>
+        <li class="why-item">
+          <div class="why-dot"></div>
+          <div>
+            <h4>Много вариантов — больше выбора</h4>
+            <p>Заказчик не угадывает из одного варианта. Он выбирает из двадцати — и берёт то, что реально нравится.</p>
+          </div>
+        </li>
+        <li class="why-item">
+          <div class="why-dot"></div>
+          <div>
+            <h4>Понимаю специфику мерча</h4>
+            <p>Знаю разницу между «красиво на экране» и «ляжет на ткань». Работаю с оглядкой на реальное производство.</p>
+          </div>
+        </li>
+        <li class="why-item">
+          <div class="why-dot"></div>
+          <div>
+            <h4>Горящие дедлайны — норма</h4>
+            <p>Мерч к событию всегда нужен вчера. Это не проблема — это мой режим по умолчанию.</p>
+          </div>
+        </li>
+      </ul>
+
+      <div>
+        <p class="big-statement">
+          Больше<br>вариантов —<br><span>быстрее</span><br>находишь<br><span>нужное</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO -->
+<section id="demo" class="demo-section">
+  <div class="section-inner">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>Покажу прямо сейчас</h2>
+    </div>
+    <div class="demo-box">
+      <div class="demo-panel">
+        <div class="live-badge">
+          <div class="live-dot"></div>
+          Live demo
+        </div>
+        <h3>Как это выглядит вживую</h3>
+        <p>Дайте мне любую задачу прямо сейчас — референс, фото, идею на словах — и я покажу первые варианты через 10–15 минут.</p>
+        <p>Без подготовки, без заготовок. То, что вы увидите — реальный рабочий процесс.</p>
+      </div>
+      <div class="demo-panel">
+        <h3>Что можно дать в качестве задачи</h3>
+        <ul>
+          <li>Фото животного / объекта / человека</li>
+          <li>Название события или команды</li>
+          <li>Описание настроения или стиля</li>
+          <li>Ссылка на референс, который нравится</li>
+          <li>Любая задача, которая сейчас есть в работе</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div><strong>AI × Merch Production</strong> — принт-ассеты для спортивного мерча</div>
+  <div>Быстро · Много вариантов · Готово к печати</div>
+</footer>
+
+<script>
+  // Animate why-items on scroll
+  const items = document.querySelectorAll('.why-item');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('vis'), i * 80);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  items.forEach(el => io.observe(el));
+
+  // How-step number animation
+  const steps = document.querySelectorAll('.how-num');
+  const io2 = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.transition = 'clip-path 0.6s ease';
+        e.target.style.setProperty('--p', '0%');
+        io2.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  steps.forEach(el => io2.observe(el));
+</script>
+</body>
+</html>
