@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>AI для мерча</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -18,12 +18,14 @@
     --border: rgba(0,0,0,0.12);
   }
 
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
   body {
     background: var(--paper);
     color: var(--ink);
     font-family: 'DM Sans', sans-serif;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    width: 100%;
   }
 
   /* NAV */
@@ -35,16 +37,24 @@
     display: flex; align-items: center; justify-content: space-between;
     padding: 0 48px;
     height: 56px;
+    width: 100%;
+    box-sizing: border-box;
   }
   .nav-logo {
     font-family: 'Anton', sans-serif;
     font-size: 18px;
     letter-spacing: 1px;
+    flex-shrink: 0;
   }
   .nav-logo span { color: var(--red); }
   .nav-links { display: flex; gap: 32px; font-size: 13px; font-weight: 500; color: #666; }
-  .nav-links a { text-decoration: none; color: inherit; transition: color 0.2s; }
+  .nav-links a { text-decoration: none; color: inherit; transition: color 0.2s; white-space: nowrap; }
   .nav-links a:hover { color: var(--ink); }
+
+  @media (max-width: 600px) {
+    nav { padding: 0 16px; height: 48px; }
+    .nav-links { gap: 14px; font-size: 12px; }
+  }
 
   /* HERO */
   .hero {
@@ -356,6 +366,17 @@
     .why-grid { grid-template-columns: 1fr; }
     .demo-box { grid-template-columns: 1fr; }
     footer { flex-direction: column; gap: 8px; text-align: center; }
+  }
+
+  @media (max-width: 600px) {
+    nav { padding: 0 16px; height: 48px; }
+    .nav-links { gap: 14px; font-size: 12px; }
+    .hero { padding: 48px 20px 40px; margin-top: 48px; }
+    .section-inner { padding: 48px 20px; }
+    .how-grid { grid-template-columns: 1fr; }
+    .demo-panel { padding: 28px 20px; }
+    footer { padding: 28px 20px; }
+    .case-card { padding: 24px 20px; }
   }
 </style>
 </head>
