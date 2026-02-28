@@ -40,6 +40,14 @@
     width: 100%;
     box-sizing: border-box;
   }
+  nav::before {
+    content: '';
+    position: absolute;
+    top: -200px; left: 0; right: 0;
+    height: 200px;
+    background: var(--paper);
+    pointer-events: none;
+  }
   .nav-logo {
     font-family: 'Anton', sans-serif;
     font-size: 18px;
